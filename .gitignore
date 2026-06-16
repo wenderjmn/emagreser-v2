@@ -26,8 +26,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (secrets — never commit)
-.env
+# env files
+# .env guarda apenas valores PÚBLICOS (NEXT_PUBLIC_*) e é versionado para o build funcionar.
+# Segredos (ex.: SUPABASE_SERVICE_ROLE_KEY) ficam só em .env*.local — nunca versionados.
 .env*.local
 
 # vercel
