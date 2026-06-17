@@ -1,0 +1,8 @@
+{
+  "name": "sdd",
+  "description": "Fluxo spec-driven de desenvolvimento: spec -> build -> auditar, orquestrado por goal.",
+  "version": "1.0.0",
+  "author": {
+    "name": "wenderjmn"
+  }
+}
