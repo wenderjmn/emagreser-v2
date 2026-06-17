@@ -1,5 +1,5 @@
 ---
-name: review
+name: auditar
 description: Atua como um auditor rigoroso e imparcial, comparando o código construído com a especificação original.
 disable-model-invocation: true
 context: fork
