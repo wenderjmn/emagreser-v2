@@ -1,0 +1,13 @@
+{
+  "name": "claude-skills",
+  "owner": {
+    "name": "wenderjmn"
+  },
+  "plugins": [
+    {
+      "name": "sdd",
+      "source": "./plugins/sdd",
+      "description": "Fluxo spec-driven: spec, build, auditar e goal"
+    }
+  ]
+}
