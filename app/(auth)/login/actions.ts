@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error: string } | null;
+export type AuthState =
+  | { error: string }
+  | { message: string }
+  | null;
 
 export async function authenticate(
   _prevState: AuthState,
@@ -24,9 +27,16 @@ export async function authenticate(
     if (password.length < 6) {
       return { error: "A senha deve ter ao menos 6 caracteres." };
     }
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       return { error: "Não foi possível criar a conta. Tente outro e-mail." };
+    }
+    // Confirmação de e-mail ativa: ainda não há sessão.
+    if (!data.session) {
+      return {
+        message:
+          "Conta criada! Verifique seu e-mail para confirmar antes de entrar.",
+      };
     }
   } else {
     const { error } = await supabase.auth.signInWithPassword({
@@ -38,7 +48,6 @@ export async function authenticate(
     }
   }
 
-  // Se a confirmação de e-mail estiver desativada no Supabase, a sessão já existe.
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }

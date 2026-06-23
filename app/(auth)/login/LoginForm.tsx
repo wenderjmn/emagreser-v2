@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { authenticate, type AuthState } from "./actions";
 
 function Buttons() {
@@ -30,7 +31,7 @@ function Buttons() {
 }
 
 export default function LoginForm() {
-  const [state, formAction] = useFormState<AuthState, FormData>(
+  const [state, formAction] = useActionState<AuthState, FormData>(
     authenticate,
     null,
   );
@@ -68,9 +69,15 @@ export default function LoginForm() {
         />
       </div>
 
-      {state?.error && (
+      {"error" in (state ?? {}) && "error" in state! && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {state.error}
+          {(state as { error: string }).error}
+        </p>
+      )}
+
+      {"message" in (state ?? {}) && "message" in state! && (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
+          {(state as { message: string }).message}
         </p>
       )}
 

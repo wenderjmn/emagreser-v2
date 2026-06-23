@@ -36,27 +36,37 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith("/login");
-  const isProtected =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/aluno");
 
-  // Sem usuário em rota protegida → manda para o login.
-  if (!user && isProtected) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
+  const isAdminAuth = pathname.startsWith("/login");
+  const isAlunoPublic = pathname === "/aluno/entrar";
+  const isAdminProtected =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
+  const isAlunoProtected =
+    pathname.startsWith("/aluno") && !isAlunoPublic;
 
-  // Com usuário tentando acessar o login → manda para o dashboard.
-  if (user && isAuthRoute) {
+  function redirectWith(to: string, searchParams?: Record<string, string>) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = to;
     url.search = "";
-    return NextResponse.redirect(url);
+    if (searchParams) {
+      for (const [k, v] of Object.entries(searchParams)) {
+        url.searchParams.set(k, v);
+      }
+    }
+    const res = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((c) => res.cookies.set(c));
+    return res;
   }
+
+  if (!user && isAdminProtected)
+    return redirectWith("/login", { redirect: pathname });
+
+  if (!user && isAlunoProtected)
+    return redirectWith("/aluno/entrar", { redirect: pathname });
+
+  // Usuário autenticado tentando acessar login do admin → dashboard.
+  if (user && isAdminAuth)
+    return redirectWith("/dashboard");
 
   return supabaseResponse;
 }
